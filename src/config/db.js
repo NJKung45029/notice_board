@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root', // TODO: Change to your database username
-  password: 'Wa2619MySQL125@!', // TODO: Change to your database password
+  password: 'db비번', // TODO: Change to your database password
   database: 'tododb'
 });
 
@@ -13,3 +13,4 @@ connection.connect(error => {
 });
 
 module.exports = connection;
+
