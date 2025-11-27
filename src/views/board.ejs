@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    
+    <link rel="stylesheet" href="/css/board.css">
+</head>
+<body>
+    <%- include('partials/nav', { title: title, user: user }) %>
+    
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h1>게시판</h1>
+            <a href="/board/write" class="button">글쓰기</a>
+        </div>
+
+        <form action="/board" method="GET" class="search-bar">
+            <input type="text" name="search" placeholder="제목 검색..." value="<%= search %>">
+            <button type="submit">검색</button>
+        </form>
+
+        <ul class="board-list">
+            <% if(posts.length > 0) { %>
+                <% posts.forEach(function(post) { %>
+                    <li class="board-item">
+                        <div class="post-header" onclick="togglePost('<%= post.board_id %>')">
+                            <div class="post-title"><%= post.title %></div>
+                            <div class="post-meta">
+                                <span><%= post.user_name %></span> | 
+                                <span>조회수 <span id="view-cnt-<%= post.board_id %>"><%= post.views %></span></span> | 
+                                <span><%= new Date(post.created_at).toLocaleDateString() %></span>
+                            </div>
+                        </div>
+
+                        <div id="content-<%= post.board_id %>" class="post-content">
+                            <p><%= post.content %></p>
+                            
+                            <% if (user && (user.user_id === post.user_id || user.email === 'admin@example.com')) { %>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <% if (user.user_id === post.user_id) { %>
+                                        <a href="/board/edit/<%= post.board_id %>" class="button">수정</a>
+                                    <% } %>
+                                    <a href="/board/delete/<%= post.board_id %>" onclick="return confirm('정말 삭제하시겠습니까?')" class="delete">삭제</a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <p style="text-align: center; padding: 20px;">검색된 게시물이 없습니다.</p>
+            <% } %>
+        </ul>
+
+        <div class="pagination">
+            <% if (totalPages > 1) { %>
+                <% if (currentPage > 1) { %>
+                    <a href="/board?page=<%= currentPage - 1 %>&search=<%= search %>">이전</a>
+                <% } %>
+                
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="/board?page=<%= i %>&search=<%= search %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+                
+                <% if (currentPage < totalPages) { %>
+                    <a href="/board?page=<%= currentPage + 1 %>&search=<%= search %>">다음</a>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+    <script src="/js/board-views.js"></script>
+</body>
+</html>
